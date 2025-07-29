@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import static com.payten.msu.cse.CSETextUtils.isBlank;
+import static com.rnturbomodulemsucsev3.CSETextUtils.isBlank;
 
 /**
  * Created by jasmin.suljic@monri.com

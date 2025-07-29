@@ -7,12 +7,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import static com.payten.msu.cse.CardUtils.isValidCVV;
-import static com.payten.msu.cse.CardUtils.isValidCardHolderName;
-import static com.payten.msu.cse.CardUtils.isValidExpiry;
-import static com.payten.msu.cse.CardUtils.isValidPan;
-import static com.payten.msu.cse.CardUtils.normalizeYear;
-import static com.payten.msu.cse.CardUtils.validateNonce;
+import static com.rnturbomodulemsucsev3.CardUtils.isValidCVV;
+import static com.rnturbomodulemsucsev3.CardUtils.isValidCardHolderName;
+import static com.rnturbomodulemsucsev3.CardUtils.isValidExpiry;
+import static com.rnturbomodulemsucsev3.CardUtils.isValidPan;
+import static com.rnturbomodulemsucsev3.CardUtils.normalizeYear;
+import static com.rnturbomodulemsucsev3.CardUtils.validateNonce;
 
 /**
  * Created by jasmin.suljic@monri.com
