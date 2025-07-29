@@ -47,14 +47,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3.git"
+    "url": "git+https://github.com/ananasGit/rn-turbo-module-msu-cse-v3.git"
   },
-  "author": "Bogdan Bokšan <bogdan.boksan@ananas.rs> (https://github.com/bogdan-boksan-ananas)",
+  "author": "Bogdan Bokšan <bogdan.boksan@ananas.rs> (https://github.com/ananasGit)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3/issues"
+    "url": "https://github.com/ananasGit/rn-turbo-module-msu-cse-v3/issues"
   },
-  "homepage": "https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3#readme",
+  "homepage": "https://github.com/ananasGit/rn-turbo-module-msu-cse-v3#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
