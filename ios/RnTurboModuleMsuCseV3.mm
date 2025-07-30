@@ -1,12 +1,48 @@
 #import "RnTurboModuleMsuCseV3.h"
 
+@interface RnTurboModuleMsuCseV3()
+
+@property (nonatomic, strong) CSEBridge *cse;
+
+@end
+
 @implementation RnTurboModuleMsuCseV3
 RCT_EXPORT_MODULE()
 
-- (NSNumber *)multiply:(double)a b:(double)b {
-    NSNumber *result = @(a * b);
+- (void)initialize:(BOOL)developmentMode {
+    self.cse = [[CSEBridge alloc] initWithDevelopmentMode:developmentMode];
+}
 
-    return result;
+- (void)encrypt:(NSString *)pan
+    cardHolderName:(NSString *)cardHolderName
+    expiryYear:(double)expiryYear
+    expiryMonth:(double)expiryMonth
+    cvv:(NSString *)cvv
+    nonce:(NSString *)nonce
+    resolve:(RCTPromiseResolveBlock)resolve
+    reject:(RCTPromiseRejectBlock)reject {
+    
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    [self.cse encryptWithPan:pan
+              cardHolderName:cardHolderName
+                  expiryYear:(NSInteger)expiryYear
+                 expiryMonth:(NSInteger)expiryMonth
+                         cvv:cvv
+                       nonce:nonce
+                    callback:^(CSEEncryptResult *result) {
+        switch (result.type) {
+            case CSEEncryptResultTypeSuccess:
+                resolve(result.data);
+                break;
+            case CSEEncryptResultTypeError:
+                reject(result.error.code, result.error.message, nil);
+                break;
+        }
+    }];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
