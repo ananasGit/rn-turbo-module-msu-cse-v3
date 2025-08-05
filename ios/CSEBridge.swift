@@ -27,10 +27,10 @@ import Foundation
             
             switch result {
             case .success(let encryptedData):
-                bridgeResult.type = .success
+                bridgeResult.type = CSEEncryptResultTypeSuccess
                 bridgeResult.data = encryptedData
             case .error(let error):
-                bridgeResult.type = .error
+                bridgeResult.type = CSEEncryptResultTypeError
                 let bridgeError = CSEEncryptError()
                 bridgeError.code = self.errorCodeString(error)
                 bridgeError.message = self.errorMessage(error)
@@ -70,20 +70,4 @@ import Foundation
             return "Encryption failed: \(message)"
         }
     }
-}
-
-@objc public class CSEEncryptResult: NSObject {
-    @objc public var type: CSEEncryptResultType = .error
-    @objc public var data: String?
-    @objc public var error: CSEEncryptError?
-}
-
-@objc public class CSEEncryptError: NSObject {
-    @objc public var code: String = ""
-    @objc public var message: String = ""
-}
-
-@objc public enum CSEEncryptResultType: Int {
-    case success = 0
-    case error = 1
 }

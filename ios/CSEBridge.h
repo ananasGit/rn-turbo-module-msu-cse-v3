@@ -2,8 +2,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CSEEncryptResult;
-@class CSEEncryptError;
+typedef NS_ENUM(NSInteger, CSEEncryptResultType) {
+    CSEEncryptResultTypeSuccess = 0,
+    CSEEncryptResultTypeError = 1
+};
+
+@interface CSEEncryptError : NSObject
+@property (nonatomic, strong) NSString *code;
+@property (nonatomic, strong) NSString *message;
+@end
+
+@interface CSEEncryptResult : NSObject
+@property (nonatomic, assign) CSEEncryptResultType type;
+@property (nonatomic, strong, nullable) NSString *data;
+@property (nonatomic, strong, nullable) CSEEncryptError *error;
+@end
 
 typedef void (^CSEEncryptCallback)(CSEEncryptResult *result);
 
