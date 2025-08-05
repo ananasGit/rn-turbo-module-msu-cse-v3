@@ -1,4 +1,5 @@
 #import "RnTurboModuleMsuCseV3.h"
+#import "RnTurboModuleMsuCseV3-Swift.h"
 
 @interface RnTurboModuleMsuCseV3()
 
