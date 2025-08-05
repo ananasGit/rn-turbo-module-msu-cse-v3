@@ -62,8 +62,8 @@ public class CSE {
                         expiryYear: Int,
                         expiryMonth: Int,
                         cvv: String,
-                        nonce: String,_
-        callback: @escaping EncryptCallback) {
+                        nonce: String,
+                        callback: @escaping EncryptCallback) {
         encrypt(CardEncryptRequest(pan: pan, cardHolderName: cardHolderName, year: expiryYear, month: expiryMonth, cvv: cvv, nonce: nonce), callback)
     }
     
