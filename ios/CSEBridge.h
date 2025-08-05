@@ -2,24 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, CSEEncryptResultType) {
-    CSEEncryptResultTypeSuccess = 0,
-    CSEEncryptResultTypeError = 1
-};
-
-@interface CSEEncryptError : NSObject
-@property (nonatomic, strong) NSString *code;
-@property (nonatomic, strong) NSString *message;
-@end
-
-@interface CSEEncryptResult : NSObject
-@property (nonatomic, assign) CSEEncryptResultType type;
-@property (nonatomic, strong, nullable) NSString *data;
-@property (nonatomic, strong, nullable) CSEEncryptError *error;
-@end
-
-typedef void (^CSEEncryptCallback)(CSEEncryptResult *result);
-
+// Simple Objective-C implementation - no Swift bridge needed
 @interface CSEBridge : NSObject
 
 - (instancetype)initWithDevelopmentMode:(BOOL)developmentMode;
@@ -30,7 +13,8 @@ typedef void (^CSEEncryptCallback)(CSEEncryptResult *result);
            expiryMonth:(NSInteger)expiryMonth
                    cvv:(NSString *)cvv
                  nonce:(NSString *)nonce
-              callback:(CSEEncryptCallback)callback;
+             onSuccess:(void(^)(NSString *encryptedData))onSuccess
+               onError:(void(^)(NSString *code, NSString *message))onError;
 
 @end
 

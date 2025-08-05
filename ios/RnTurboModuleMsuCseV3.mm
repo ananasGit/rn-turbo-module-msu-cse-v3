@@ -33,16 +33,12 @@ RCT_EXPORT_MODULE()
                  expiryMonth:(NSInteger)expiryMonth
                          cvv:cvv
                        nonce:nonce
-                    callback:^(CSEEncryptResult *result) {
-        switch (result.type) {
-            case CSEEncryptResultTypeSuccess:
-                resolve(result.data);
-                break;
-            case CSEEncryptResultTypeError:
-                reject(result.error.code, result.error.message, nil);
-                break;
-        }
-    }];
+                   onSuccess:^(NSString *encryptedData) {
+                       resolve(encryptedData);
+                   }
+                     onError:^(NSString *code, NSString *message) {
+                       reject(code, message, nil);
+                   }];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
