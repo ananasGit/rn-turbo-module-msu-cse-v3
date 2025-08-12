@@ -203,4 +203,167 @@
     return [[string componentsSeparatedByCharactersInSet:nonDigits] componentsJoinedByString:@""];
 }
 
+#pragma mark - Card Validation Methods
+
+- (BOOL)isValidPan:(NSString *)pan {
+    NSString *panDigits = [self digitsOnly:pan];
+    return [self luhnCheck:panDigits] && [self isValidCardLength:panDigits];
+}
+
+- (BOOL)isValidCVV:(NSString *)cvv withPan:(NSString *)pan {
+    if (cvv.length == 0) return NO;
+    
+    NSString *cvvDigits = [self digitsOnly:cvv];
+    NSString *cardBrand = [self detectCardBrand:pan];
+    
+    if ([cardBrand isEqualToString:@"unknown"] && cvvDigits.length >= 3 && cvvDigits.length <= 4) {
+        return YES;
+    }
+    if ([cardBrand isEqualToString:@"american-express"] && cvvDigits.length == 4) {
+        return YES;
+    }
+    return cvvDigits.length == 3;
+}
+
+- (BOOL)isValidExpiryMonth:(NSInteger)month year:(NSInteger)year {
+    if (month < 1 || month > 12) return NO;
+    
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSInteger normalizedYear = [self normalizeYear:year];
+    NSInteger currentYear = [calendar component:NSCalendarUnitYear fromDate:now];
+    NSInteger currentMonth = [calendar component:NSCalendarUnitMonth fromDate:now];
+    
+    if (normalizedYear < currentYear) return NO;
+    if (normalizedYear == currentYear && month < currentMonth) return NO;
+    
+    return YES;
+}
+
+- (NSString *)detectCardBrand:(NSString *)pan {
+    NSString *panDigits = [self digitsOnly:pan];
+    
+    // American Express: 34, 37
+    if ([self hasPrefix:panDigits prefixes:@[@"34", @"37"]]) {
+        return @"american-express";
+    }
+    
+    // Dinacard: 9891, 655670-655697, 657371-657398
+    NSArray *dinacardPrefixes = @[@"9891", @"655670", @"655671", @"655672", @"655673", @"655674", @"655675", @"655676", @"655677", @"655678", @"655679", @"655680", @"655681", @"655682", @"655683", @"655684", @"655685", @"655686", @"655687", @"655688", @"655689", @"655690", @"655691", @"655692", @"655693", @"655694", @"655695", @"655696", @"655697", @"657371", @"657372", @"657373", @"657374", @"657375", @"657376", @"657377", @"657378", @"657379", @"657380", @"657381", @"657382", @"657383", @"657384", @"657385", @"657386", @"657387", @"657388", @"657389", @"657390", @"657391", @"657392", @"657393", @"657394", @"657395", @"657396", @"657397", @"657398"];
+    if ([self hasPrefix:panDigits prefixes:dinacardPrefixes]) {
+        return @"dinacard";
+    }
+    
+    // Discover: 60, 64, 65
+    if ([self hasPrefix:panDigits prefixes:@[@"60", @"64", @"65"]]) {
+        return @"discover";
+    }
+    
+    // JCB: 35
+    if ([self hasPrefix:panDigits prefixes:@[@"35"]]) {
+        return @"jcb";
+    }
+    
+    // Diners Club: 300-305, 309, 36, 38, 39
+    if ([self hasPrefix:panDigits prefixes:@[@"300", @"301", @"302", @"303", @"304", @"305", @"309", @"36", @"38", @"39"]]) {
+        return @"diners-club";
+    }
+    
+    // Visa: 4
+    if ([self hasPrefix:panDigits prefixes:@[@"4"]]) {
+        return @"visa";
+    }
+    
+    // Maestro: 56, 58, 67, 502, 503, 506, 639, 5018, 6020
+    if ([self hasPrefix:panDigits prefixes:@[@"56", @"58", @"67", @"502", @"503", @"506", @"639", @"5018", @"6020"]]) {
+        return @"maestro";
+    }
+    
+    // Mastercard: 2221-2720, 50-55, 67
+    NSArray *mastercardPrefixes = @[@"2221", @"2222", @"2223", @"2224", @"2225", @"2226", @"2227", @"2228", @"2229", @"223", @"224", @"225", @"226", @"227", @"228", @"229", @"23", @"24", @"25", @"26", @"270", @"271", @"2720", @"50", @"51", @"52", @"53", @"54", @"55", @"67"];
+    if ([self hasPrefix:panDigits prefixes:mastercardPrefixes]) {
+        return @"mastercard";
+    }
+    
+    // UnionPay: 62
+    if ([self hasPrefix:panDigits prefixes:@[@"62"]]) {
+        return @"union-pay";
+    }
+    
+    // Troy: 979200-979299
+    NSMutableArray *troyPrefixes = [NSMutableArray array];
+    for (int i = 979200; i <= 979299; i++) {
+        [troyPrefixes addObject:[NSString stringWithFormat:@"%d", i]];
+    }
+    if ([self hasPrefix:panDigits prefixes:troyPrefixes]) {
+        return @"troy";
+    }
+    
+    return @"unknown";
+}
+
+#pragma mark - Helper Methods
+
+- (BOOL)luhnCheck:(NSString *)number {
+    if (number.length == 0) return NO;
+    
+    NSInteger sum = 0;
+    BOOL alternate = NO;
+    
+    for (NSInteger i = number.length - 1; i >= 0; i--) {
+        NSInteger digit = [[number substringWithRange:NSMakeRange(i, 1)] integerValue];
+        
+        if (alternate) {
+            digit *= 2;
+            if (digit > 9) {
+                digit = (digit % 10) + 1;
+            }
+        }
+        
+        sum += digit;
+        alternate = !alternate;
+    }
+    
+    return (sum % 10) == 0;
+}
+
+- (BOOL)isValidCardLength:(NSString *)pan {
+    NSString *cardBrand = [self detectCardBrand:pan];
+    NSInteger length = pan.length;
+    
+    if ([cardBrand isEqualToString:@"american-express"]) {
+        return length == 15;
+    } else if ([cardBrand isEqualToString:@"diners-club"]) {
+        return length == 14;
+    } else if ([cardBrand isEqualToString:@"visa"]) {
+        return length == 16 || length == 19;
+    } else if ([cardBrand isEqualToString:@"maestro"]) {
+        return length >= 12 && length <= 19;
+    } else if ([cardBrand isEqualToString:@"unknown"]) {
+        return NO;
+    } else {
+        return length == 16;
+    }
+}
+
+- (BOOL)hasPrefix:(NSString *)number prefixes:(NSArray<NSString *> *)prefixes {
+    for (NSString *prefix in prefixes) {
+        if ([number hasPrefix:prefix]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (NSInteger)normalizeYear:(NSInteger)year {
+    if (year >= 0 && year < 100) {
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        NSInteger currentYear = [calendar component:NSCalendarUnitYear fromDate:[NSDate date]];
+        NSInteger century = (currentYear / 100) * 100;
+        return century + year;
+    }
+    return year;
+}
+
 @end

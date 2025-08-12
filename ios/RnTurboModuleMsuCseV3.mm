@@ -41,6 +41,56 @@ RCT_EXPORT_MODULE()
                    }];
 }
 
+- (void)isValidPan:(NSString *)pan
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL isValid = [self.cse isValidPan:pan];
+    resolve(@(isValid));
+}
+
+- (void)isValidCVV:(NSString *)cvv
+               pan:(NSString * _Nullable)pan
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL isValid = [self.cse isValidCVV:cvv withPan:pan];
+    resolve(@(isValid));
+}
+
+- (void)isValidExpiry:(double)month
+                 year:(double)year
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL isValid = [self.cse isValidExpiryMonth:(NSInteger)month year:(NSInteger)year];
+    resolve(@(isValid));
+}
+
+- (void)detectBrand:(NSString *)pan
+            resolve:(RCTPromiseResolveBlock)resolve
+             reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    NSString *brand = [self.cse detectCardBrand:pan];
+    resolve(brand);
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {

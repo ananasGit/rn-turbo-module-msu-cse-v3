@@ -16,6 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
              onSuccess:(void(^)(NSString *encryptedData))onSuccess
                onError:(void(^)(NSString *code, NSString *message))onError;
 
+- (BOOL)isValidPan:(NSString *)pan;
+- (BOOL)isValidCVV:(NSString *)cvv withPan:(NSString *)pan;
+- (BOOL)isValidExpiryMonth:(NSInteger)month year:(NSInteger)year;
+- (NSString *)detectCardBrand:(NSString *)pan;
+
 @end
 
 NS_ASSUME_NONNULL_END

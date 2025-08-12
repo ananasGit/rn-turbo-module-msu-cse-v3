@@ -61,4 +61,48 @@ class RnTurboModuleMsuCseV3Module(reactContext: ReactApplicationContext) :
       }
     )
   }
+
+  @ReactMethod
+  override fun isValidPan(pan: String, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val isValid = cse!!.isValidPan(pan)
+    promise.resolve(isValid)
+  }
+
+  @ReactMethod
+  override fun isValidCVV(cvv: String, pan: String?, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val isValid = cse!!.isValidCVV(cvv, pan)
+    promise.resolve(isValid)
+  }
+
+  @ReactMethod
+  override fun isValidExpiry(month: Double, year: Double, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val isValid = cse!!.isValidExpiry(month.toInt(), year.toInt())
+    promise.resolve(isValid)
+  }
+
+  @ReactMethod
+  override fun detectBrand(pan: String, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val brand = cse!!.detectBrand(pan)
+    promise.resolve(brand)
+  }
 }

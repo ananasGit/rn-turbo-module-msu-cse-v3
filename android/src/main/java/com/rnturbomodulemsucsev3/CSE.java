@@ -29,9 +29,21 @@ public final class CSE {
         this.cseApi = new CSEApiImpl(developmentMode);
     }
 
+    // Validation methods using CardUtils
+    public boolean isValidPan(String pan) {
+        return CardUtils.isValidPan(pan);
+    }
 
-    public boolean isValidCVV(String cvv) {
-        return isValidCVV(cvv, null);
+    public boolean isValidCVV(String cvv, String pan) {
+        return CardUtils.isValidCVV(cvv, pan);
+    }
+
+    public boolean isValidExpiry(int month, int year) {
+        return CardUtils.isValidExpiry(month, year);
+    }
+
+    public String detectBrand(String pan) {
+        return CardUtils.detectCardBrand(pan);
     }
 
     public List<String> getErrors() {
@@ -40,26 +52,6 @@ public final class CSE {
 
     public boolean hasErrors() {
         return !errors.isEmpty();
-    }
-
-    public boolean isValidCVV(String cvv, String pan) {
-        return CardUtils.isValidCVV(cvv, pan);
-    }
-
-    public boolean isValidCardHolderName(String name) {
-        return CardUtils.isValidCardHolderName(name);
-    }
-
-    public boolean isValidPan(String pan) {
-        return CardUtils.isValidPan(pan);
-    }
-
-    public boolean isValidCardToken(String cardToken) {
-        return CardUtils.isValidCardToken(cardToken);
-    }
-
-    public CardBrand detectBrand(String pan) {
-        return CardUtils.detectBrand(pan);
     }
 
     public void encrypt(String pan,
@@ -105,13 +97,5 @@ public final class CSE {
         }
     }
 
-    /**
-     * @param month
-     * @param year
-     * @return
-     */
-    public boolean isValidExpiry(Integer month, Integer year) {
-        return CardUtils.isValidExpiry(Calendar.getInstance(), month, year);
-    }
 
 }
