@@ -1,4 +1,4 @@
-import RnTurboModuleMsuCseV3 from './NativeRnTurboModuleMsuCseV3Spec';
+import RnTurboModuleMsuCseV3 from './NativeRnTurboModuleMsuCseV3';
 
 export interface MSUCSEModule {
   initialize(developmentMode: boolean): void;
