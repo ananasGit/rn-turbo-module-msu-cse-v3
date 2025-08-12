@@ -103,7 +103,7 @@
     }
     
     NSString *endpoint = self.developmentMode ? 
-        @"https://test.merchantsafeunipay.com/msu/cse/publickey" : 
+        @"https://entegrasyon.asseco-see.com.tr/msu/cse/publickey" : 
         @"https://merchantsafeunipay.com/msu/cse/publickey";
     
     NSURL *url = [NSURL URLWithString:endpoint];
