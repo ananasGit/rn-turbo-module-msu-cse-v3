@@ -26,11 +26,18 @@ Pod::Spec.new do |s|
   # Link Security framework for RSA encryption
   s.frameworks = "Security"
 
-  # C++ compilation flags
+  # C++ compilation flags and Swift bridging header
   s.pod_target_xcconfig = {
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "CLANG_CXX_LIBRARY" => "libc++",
-    "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
+    "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+    "DEFINES_MODULE" => "YES",
+    "SWIFT_OBJC_BRIDGING_HEADER" => "$(SRCROOT)/../node_modules/rn-turbo-module-msu-cse-v3/ios/RnTurboModuleMsuCseV3-Bridging-Header.h"
+  }
+  
+  # Disable modules for this specific target to avoid C++ header issues
+  s.user_target_xcconfig = {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES"
   }
 
   install_modules_dependencies(s)
