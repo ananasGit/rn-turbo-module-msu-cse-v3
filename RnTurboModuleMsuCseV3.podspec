@@ -31,7 +31,8 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "CLANG_CXX_LIBRARY" => "libc++",
     "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
-    "DEFINES_MODULE" => "YES"
+    "DEFINES_MODULE" => "YES",
+    "SWIFT_OBJC_INTERFACE_HEADER_NAME" => "$(SWIFT_MODULE_NAME)-Swift.h"
   }
   
   # Disable modules for this specific target to avoid C++ header issues
