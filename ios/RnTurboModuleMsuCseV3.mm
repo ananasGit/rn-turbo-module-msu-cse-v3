@@ -1,11 +1,11 @@
 #import "RnTurboModuleMsuCseV3.h"
-#import "RnTurboModuleMsuCseV3-Swift.h"
+#import "RnTurboModuleMsuCseV3Impl.h"
 
 @implementation RnTurboModuleMsuCseV3
 
 RCT_EXPORT_MODULE()
 
-// Create instance of Swift implementation class
+// Create instance of Objective-C implementation class
 RnTurboModuleMsuCseV3Impl *implementation = [[RnTurboModuleMsuCseV3Impl alloc] init];
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
