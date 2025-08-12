@@ -57,7 +57,7 @@ RnTurboModuleMsuCseV3Impl *implementation = [[RnTurboModuleMsuCseV3Impl alloc] i
 }
 
 - (void)isValidCVV:(NSString *)cvv
-               pan:(nullable NSString *)pan
+               pan:(NSString *)pan
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
     
