@@ -1,17 +1,17 @@
 import Foundation
 import Security
 
-@objcMembers class RnTurboModuleMsuCseV3Impl: NSObject {
+@objc public class RnTurboModuleMsuCseV3Impl: NSObject {
     
     private var cseInstance: CSE?
     private var isDevelopmentMode: Bool = false
     
-    func initialize(developmentMode: Bool) {
+    @objc public func initialize(developmentMode: Bool) {
         self.isDevelopmentMode = developmentMode
         self.cseInstance = CSE(developmentMode: developmentMode)
     }
     
-    func encrypt(
+    @objc public func encrypt(
         pan: String,
         cardHolderName: String,
         expiryYear: Int,
@@ -42,7 +42,7 @@ import Security
         )
     }
     
-    func encryptCVV(
+    @objc public func encryptCVV(
         cvv: String,
         nonce: String,
         resolve: @escaping (Any?) -> Void,
@@ -65,14 +65,14 @@ import Security
         )
     }
     
-    func isValidPan(_ pan: String) -> Bool {
+    @objc public func isValidPan(_ pan: String) -> Bool {
         guard let cse = cseInstance else {
             return false
         }
         return cse.isValidPan(pan)
     }
     
-    func isValidCVV(_ cvv: String, pan: String?) -> Bool {
+    @objc public func isValidCVV(_ cvv: String, pan: String?) -> Bool {
         guard let cse = cseInstance else {
             return false
         }
@@ -84,14 +84,14 @@ import Security
         }
     }
     
-    func isValidExpiry(month: Int, year: Int) -> Bool {
+    @objc public func isValidExpiry(month: Int, year: Int) -> Bool {
         guard let cse = cseInstance else {
             return false
         }
         return cse.isValidExpiry(month: month, year: year)
     }
     
-    func detectBrand(_ pan: String) -> String {
+    @objc public func detectBrand(_ pan: String) -> String {
         guard let cse = cseInstance else {
             return CardBrand.unknown.stringValue
         }
@@ -99,28 +99,28 @@ import Security
         return brand.stringValue
     }
     
-    func isValidCardHolderName(_ name: String) -> Bool {
+    @objc public func isValidCardHolderName(_ name: String) -> Bool {
         guard let cse = cseInstance else {
             return false
         }
         return cse.isValidCardHolderName(name)
     }
     
-    func isValidCardToken(_ token: String) -> Bool {
+    @objc public func isValidCardToken(_ token: String) -> Bool {
         guard let cse = cseInstance else {
             return false
         }
         return cse.isValidCardToken(token)
     }
     
-    func getErrors() -> [String] {
+    @objc public func getErrors() -> [String] {
         guard let cse = cseInstance else {
             return ["CSE Module not initialized"]
         }
         return cse.errors
     }
     
-    func hasErrors() -> Bool {
+    @objc public func hasErrors() -> Bool {
         guard let cse = cseInstance else {
             return true
         }
