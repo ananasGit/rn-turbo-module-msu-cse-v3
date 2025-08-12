@@ -93,7 +93,7 @@ import Security
     
     @objc public func detectBrand(_ pan: String) -> String {
         guard let cse = cseInstance else {
-            return CardBrand.unknown.stringValue
+            return CardBrand.Unknown.stringValue
         }
         let brand = cse.detectBrand(pan)
         return brand.stringValue
