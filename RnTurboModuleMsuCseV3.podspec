@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.source_files = "ios/**/*.{m,mm,swift}", "ios/RnTurboModuleMsuCseV3.h"
   s.public_header_files = "ios/RnTurboModuleMsuCseV3.h"
   
   # Enable Swift support
