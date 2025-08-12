@@ -103,6 +103,76 @@ class RnTurboModuleMsuCseV3Module(reactContext: ReactApplicationContext) :
     }
     
     val brand = cse!!.detectBrand(pan)
-    promise.resolve(brand)
+    promise.resolve(brand.toString())
+  }
+
+  @ReactMethod
+  override fun encryptCVV(cvv: String, nonce: String, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+
+    cse!!.encrypt(
+      cvv,
+      nonce,
+      object : EncryptCallback {
+        override fun onSuccess(encryptedData: String) {
+          promise.resolve(encryptedData)
+        }
+
+        override fun onError(exception: EncryptException) {
+          promise.reject(
+            exception.code.toString(),
+            exception.message,
+            exception
+          )
+        }
+      }
+    )
+  }
+
+  @ReactMethod
+  override fun isValidCardHolderName(name: String, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val isValid = cse!!.isValidCardHolderName(name)
+    promise.resolve(isValid)
+  }
+
+  @ReactMethod
+  override fun isValidCardToken(token: String, promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val isValid = cse!!.isValidCardToken(token)
+    promise.resolve(isValid)
+  }
+
+  @ReactMethod
+  override fun getErrors(promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val errors = cse!!.errors
+    promise.resolve(errors)
+  }
+
+  @ReactMethod
+  override fun hasErrors(promise: Promise) {
+    if (cse == null) {
+      promise.reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.")
+      return
+    }
+    
+    val hasErrors = cse!!.hasErrors()
+    promise.resolve(hasErrors)
   }
 }

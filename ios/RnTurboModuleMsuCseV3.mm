@@ -1,8 +1,9 @@
 #import "RnTurboModuleMsuCseV3.h"
+#import "RnTurboModuleMsuCseV3-Swift.h"
 
 @interface RnTurboModuleMsuCseV3()
 
-@property (nonatomic, strong) CSEBridge *cse;
+@property (nonatomic, strong) CSE *cse;
 
 @end
 
@@ -10,7 +11,7 @@
 RCT_EXPORT_MODULE()
 
 - (void)initialize:(BOOL)developmentMode {
-    self.cse = [[CSEBridge alloc] initWithDevelopmentMode:developmentMode];
+    self.cse = [[CSE alloc] initWithDevelopmentMode:developmentMode];
 }
 
 - (void)encrypt:(NSString *)pan
@@ -33,12 +34,20 @@ RCT_EXPORT_MODULE()
                  expiryMonth:(NSInteger)expiryMonth
                          cvv:cvv
                        nonce:nonce
-                   onSuccess:^(NSString *encryptedData) {
-                       resolve(encryptedData);
-                   }
-                     onError:^(NSString *code, NSString *message) {
-                       reject(code, message, nil);
-                   }];
+                    callback:^(EncryptResult *result) {
+                        switch (result.tag) {
+                            case EncryptResultSuccess: {
+                                NSString *encrypted = result.success;
+                                resolve(encrypted);
+                                break;
+                            }
+                            case EncryptResultError: {
+                                EncryptionError *error = result.error;
+                                reject(@"ENCRYPTION_ERROR", [error localizedDescription], nil);
+                                break;
+                            }
+                        }
+                    }];
 }
 
 - (void)isValidPan:(NSString *)pan
@@ -62,7 +71,12 @@ RCT_EXPORT_MODULE()
         return;
     }
     
-    BOOL isValid = [self.cse isValidCVV:cvv withPan:pan];
+    BOOL isValid;
+    if (pan != nil) {
+        isValid = [self.cse isValidCVVWithCvv:cvv pan:pan];
+    } else {
+        isValid = [self.cse isValidCVV:cvv];
+    }
     resolve(@(isValid));
 }
 
@@ -75,7 +89,7 @@ RCT_EXPORT_MODULE()
         return;
     }
     
-    BOOL isValid = [self.cse isValidExpiryMonth:(NSInteger)month year:(NSInteger)year];
+    BOOL isValid = [self.cse isValidExpiryWithMonth:(NSInteger)month year:(NSInteger)year];
     resolve(@(isValid));
 }
 
@@ -87,8 +101,82 @@ RCT_EXPORT_MODULE()
         return;
     }
     
-    NSString *brand = [self.cse detectCardBrand:pan];
-    resolve(brand);
+    CardBrand brand = [self.cse detectBrand:pan];
+    NSString *brandString = [brand rawValue];
+    resolve(brandString);
+}
+
+- (void)encryptCVV:(NSString *)cvv
+             nonce:(NSString *)nonce
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    [self.cse encryptWithCvv:cvv
+                       nonce:nonce
+                    callback:^(EncryptResult *result) {
+                        switch (result.tag) {
+                            case EncryptResultSuccess: {
+                                NSString *encrypted = result.success;
+                                resolve(encrypted);
+                                break;
+                            }
+                            case EncryptResultError: {
+                                EncryptionError *error = result.error;
+                                reject(@"ENCRYPTION_ERROR", [error localizedDescription], nil);
+                                break;
+                            }
+                        }
+                    }];
+}
+
+- (void)isValidCardHolderName:(NSString *)name
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL isValid = [self.cse isValidCardHolderName:name];
+    resolve(@(isValid));
+}
+
+- (void)isValidCardToken:(NSString *)token
+                 resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL isValid = [self.cse isValidCardToken:token];
+    resolve(@(isValid));
+}
+
+- (void)getErrors:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    NSArray<NSString *> *errors = [self.cse errors];
+    resolve(errors);
+}
+
+- (void)hasErrors:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+    if (self.cse == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    BOOL hasErrors = [self.cse hasErrors];
+    resolve(@(hasErrors));
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
