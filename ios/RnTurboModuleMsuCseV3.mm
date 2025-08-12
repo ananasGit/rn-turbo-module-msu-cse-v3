@@ -11,7 +11,7 @@ RnTurboModuleMsuCseV3Impl *implementation = [[RnTurboModuleMsuCseV3Impl alloc] i
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-    return std::make_shared<facebook::react::NativeRnTurboModuleMsuCseV3SpecJSI>(params);
+    return std::make_shared<facebook::react::NativeRnTurboModuleMsuCseV3SpecSpecJSI>(params);
 }
 
 - (void)initialize:(BOOL)developmentMode {
@@ -57,7 +57,7 @@ RnTurboModuleMsuCseV3Impl *implementation = [[RnTurboModuleMsuCseV3Impl alloc] i
 }
 
 - (void)isValidCVV:(NSString *)cvv
-               pan:(NSString * _Nullable)pan
+               pan:(nullable NSString *)pan
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
     
