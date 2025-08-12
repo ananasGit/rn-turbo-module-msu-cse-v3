@@ -26,6 +26,12 @@ Pod::Spec.new do |s|
   # Link Security framework for RSA encryption
   s.frameworks = "Security"
 
+  # C++ compilation flags
+  s.pod_target_xcconfig = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LIBRARY" => "libc++",
+    "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
+  }
 
   install_modules_dependencies(s)
 end
