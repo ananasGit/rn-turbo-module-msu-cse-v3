@@ -18,8 +18,8 @@ import Security
         expiryMonth: Int,
         cvv: String,
         nonce: String,
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
+        resolve: @escaping (Any?) -> Void,
+        reject: @escaping (String?, String?, Error?) -> Void
     ) {
         guard let cse = cseInstance else {
             reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.", nil)
@@ -45,8 +45,8 @@ import Security
     func encryptCVV(
         cvv: String,
         nonce: String,
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
+        resolve: @escaping (Any?) -> Void,
+        reject: @escaping (String?, String?, Error?) -> Void
     ) {
         guard let cse = cseInstance else {
             reject("NOT_INITIALIZED", "CSE Module not initialized. Call initialize() first.", nil)
