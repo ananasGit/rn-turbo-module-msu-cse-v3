@@ -2,16 +2,21 @@
 #import "RnTurboModuleMsuCseV3-Swift.h"
 
 @interface RnTurboModuleMsuCseV3()
-
-@property (nonatomic, strong) CSE *cse;
-
+@property (nonatomic, strong) CSE *cseInstance;
 @end
 
 @implementation RnTurboModuleMsuCseV3
+
 RCT_EXPORT_MODULE()
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeRnTurboModuleMsuCseV3SpecJSI>(params);
+}
+
 - (void)initialize:(BOOL)developmentMode {
-    self.cse = [[CSE alloc] initWithDevelopmentMode:developmentMode];
+    self.cseInstance = [[CSE alloc] initWithDevelopmentMode:developmentMode];
 }
 
 - (void)encrypt:(NSString *)pan
@@ -23,42 +28,53 @@ RCT_EXPORT_MODULE()
     resolve:(RCTPromiseResolveBlock)resolve
     reject:(RCTPromiseRejectBlock)reject {
     
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    [self.cse encryptWithPan:pan
-              cardHolderName:cardHolderName
-                  expiryYear:(NSInteger)expiryYear
-                 expiryMonth:(NSInteger)expiryMonth
-                         cvv:cvv
-                       nonce:nonce
-                    callback:^(EncryptResult *result) {
-                        switch (result.tag) {
-                            case EncryptResultSuccess: {
-                                NSString *encrypted = result.success;
+    [self.cseInstance encryptCardWithPan:pan
+                     cardHolderName:cardHolderName
+                         expiryYear:(NSInteger)expiryYear
+                        expiryMonth:(NSInteger)expiryMonth
+                                cvv:cvv
+                              nonce:nonce
+                            success:^(NSString *encrypted) {
                                 resolve(encrypted);
-                                break;
                             }
-                            case EncryptResultError: {
-                                EncryptionError *error = result.error;
-                                reject(@"ENCRYPTION_ERROR", [error localizedDescription], nil);
-                                break;
-                            }
-                        }
-                    }];
+                            failure:^(NSString *error) {
+                                reject(@"ENCRYPTION_ERROR", error, nil);
+                            }];
+}
+
+- (void)encryptCVV:(NSString *)cvv
+             nonce:(NSString *)nonce
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject {
+    if (self.cseInstance == nil) {
+        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
+        return;
+    }
+    
+    [self.cseInstance encryptCVVOnlyWithCvv:cvv
+                                 nonce:nonce
+                               success:^(NSString *encrypted) {
+                                   resolve(encrypted);
+                               }
+                               failure:^(NSString *error) {
+                                   reject(@"ENCRYPTION_ERROR", error, nil);
+                               }];
 }
 
 - (void)isValidPan:(NSString *)pan
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    BOOL isValid = [self.cse isValidPan:pan];
+    BOOL isValid = [self.cseInstance isValidPan:pan];
     resolve(@(isValid));
 }
 
@@ -66,16 +82,16 @@ RCT_EXPORT_MODULE()
                pan:(NSString * _Nullable)pan
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
     BOOL isValid;
     if (pan != nil) {
-        isValid = [self.cse isValidCVVWithCvv:cvv pan:pan];
+        isValid = [self.cseInstance isValidCVVWithCvv:cvv pan:pan];
     } else {
-        isValid = [self.cse isValidCVV:cvv];
+        isValid = [self.cseInstance isValidCVV:cvv];
     }
     resolve(@(isValid));
 }
@@ -84,105 +100,72 @@ RCT_EXPORT_MODULE()
                  year:(double)year
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    BOOL isValid = [self.cse isValidExpiryWithMonth:(NSInteger)month year:(NSInteger)year];
+    BOOL isValid = [self.cseInstance isValidExpiryWithMonth:(NSInteger)month year:(NSInteger)year];
     resolve(@(isValid));
 }
 
 - (void)detectBrand:(NSString *)pan
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    CardBrand brand = [self.cse detectBrand:pan];
-    NSString *brandString = [brand rawValue];
+    CardBrand brand = [self.cseInstance detectBrand:pan];
+    NSString *brandString = [brand stringValue];
     resolve(brandString);
-}
-
-- (void)encryptCVV:(NSString *)cvv
-             nonce:(NSString *)nonce
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
-        reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
-        return;
-    }
-    
-    [self.cse encryptWithCvv:cvv
-                       nonce:nonce
-                    callback:^(EncryptResult *result) {
-                        switch (result.tag) {
-                            case EncryptResultSuccess: {
-                                NSString *encrypted = result.success;
-                                resolve(encrypted);
-                                break;
-                            }
-                            case EncryptResultError: {
-                                EncryptionError *error = result.error;
-                                reject(@"ENCRYPTION_ERROR", [error localizedDescription], nil);
-                                break;
-                            }
-                        }
-                    }];
 }
 
 - (void)isValidCardHolderName:(NSString *)name
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    BOOL isValid = [self.cse isValidCardHolderName:name];
+    BOOL isValid = [self.cseInstance isValidCardHolderName:name];
     resolve(@(isValid));
 }
 
 - (void)isValidCardToken:(NSString *)token
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    BOOL isValid = [self.cse isValidCardToken:token];
+    BOOL isValid = [self.cseInstance isValidCardToken:token];
     resolve(@(isValid));
 }
 
 - (void)getErrors:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    NSArray<NSString *> *errors = [self.cse errors];
+    NSArray<NSString *> *errors = [self.cseInstance errors];
     resolve(errors);
 }
 
 - (void)hasErrors:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
-    if (self.cse == nil) {
+    if (self.cseInstance == nil) {
         reject(@"NOT_INITIALIZED", @"CSE Module not initialized. Call initialize() first.", nil);
         return;
     }
     
-    BOOL hasErrors = [self.cse hasErrors];
+    BOOL hasErrors = [self.cseInstance hasErrors];
     resolve(@(hasErrors));
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-    return std::make_shared<facebook::react::NativeRnTurboModuleMsuCseV3SpecJSI>(params);
 }
 
 @end

@@ -14,10 +14,14 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  s.private_header_files = "ios/**/*.h"
+  s.public_header_files = "ios/RnTurboModuleMsuCseV3.h"
   
   # Enable Swift support
   s.swift_version = "5.0"
+  
+  # Required React Native dependencies
+  s.dependency 'React-Core'
+  s.dependency 'ReactCommon/turbomodule/core'
   
   # Link Security framework for RSA encryption
   s.frameworks = "Security"

@@ -8,7 +8,7 @@
 import Foundation
 
 @available(iOS 10.0, *)
-public class CSE {
+@objcMembers public class CSE: NSObject {
     
     private var _errors: [String] = []
     
@@ -46,7 +46,7 @@ public class CSE {
     }
     
     public func detectBrand(_ pan: String) -> CardBrand {
-        return CardUtils.cardBrand(pan)
+        return CardUtils.possibleCardBrand(pan)
     }
     
     public func isValidExpiry(month: Int, year: Int) -> Bool {
@@ -62,9 +62,43 @@ public class CSE {
                         expiryYear: Int,
                         expiryMonth: Int,
                         cvv: String,
-                        nonce: String,_
-        callback: @escaping EncryptCallback) {
+                        nonce: String,
+                        callback: @escaping EncryptCallback) {
         encrypt(CardEncryptRequest(pan: pan, cardHolderName: cardHolderName, year: expiryYear, month: expiryMonth, cvv: cvv, nonce: nonce), callback)
+    }
+    
+    // Objective-C compatible wrapper
+    @objc public func encryptCard(pan: String,
+                                cardHolderName: String,
+                                expiryYear: Int,
+                                expiryMonth: Int,
+                                cvv: String,
+                                nonce: String,
+                                success: @escaping (String) -> Void,
+                                failure: @escaping (String) -> Void) {
+        encrypt(pan: pan, cardHolderName: cardHolderName, expiryYear: expiryYear, expiryMonth: expiryMonth, cvv: cvv, nonce: nonce) { result in
+            switch result {
+            case .success(let encrypted):
+                success(encrypted)
+            case .error(let error):
+                failure(error.localizedDescription)
+            }
+        }
+    }
+    
+    // Objective-C compatible CVV wrapper
+    @objc public func encryptCVVOnly(cvv: String,
+                                   nonce: String,
+                                   success: @escaping (String) -> Void,
+                                   failure: @escaping (String) -> Void) {
+        encrypt(cvv: cvv, nonce: nonce) { result in
+            switch result {
+            case .success(let encrypted):
+                success(encrypted)
+            case .error(let error):
+                failure(error.localizedDescription)
+            }
+        }
     }
     
     private func encrypt(_ request: EncryptRequest, _ callback: @escaping EncryptCallback) {
