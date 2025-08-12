@@ -3,7 +3,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RnTurboModuleMsuCseV3 : NSObject <NativeRnTurboModuleMsuCseV3Spec>
+@interface RnTurboModuleMsuCseV3 : NSObject <NativeRnTurboModuleMsuCseV3SpecSpec>
 
 @end
 
