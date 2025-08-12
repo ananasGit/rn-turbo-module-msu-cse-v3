@@ -10,14 +10,14 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => min_ios_version_supported }
+  s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/bogdan-boksan-ananas/rn-turbo-module-msu-cse-v3.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp}"
   s.private_header_files = "ios/**/*.h"
   
   # Link Security framework for RSA encryption
-  s.framework = "Security"
+  s.frameworks = "Security"
 
 
   install_modules_dependencies(s)

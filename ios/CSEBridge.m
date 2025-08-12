@@ -139,7 +139,7 @@
     [task resume];
 }
 
-- (NSString *)encryptString:(NSString *)plainText withPublicKey:(NSString *)publicKeyString {
+- (NSString *)encryptString:(NSString *)plainText withPublicKey:(NSString *)publicKeyString API_AVAILABLE(ios(10.0)) {
     // Clean up the public key string
     NSString *cleanedKey = [publicKeyString stringByReplacingOccurrencesOfString:@"-----BEGIN PUBLIC KEY-----" withString:@""];
     cleanedKey = [cleanedKey stringByReplacingOccurrencesOfString:@"-----END PUBLIC KEY-----" withString:@""];
@@ -154,7 +154,7 @@
     }
     
     // Create SecKey from the data
-    SecKey *publicKey = [self createPublicKeyFromData:keyData];
+    SecKeyRef publicKey = [self createPublicKeyFromData:keyData];
     if (!publicKey) {
         return nil;
     }
@@ -179,7 +179,7 @@
     return [encryptedData base64EncodedStringWithOptions:0];
 }
 
-- (SecKey *)createPublicKeyFromData:(NSData *)keyData {
+- (SecKeyRef)createPublicKeyFromData:(NSData *)keyData API_AVAILABLE(ios(10.0)) {
     // Create attributes for the public key
     NSDictionary *attributes = @{
         (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
@@ -188,7 +188,7 @@
     };
     
     CFErrorRef error = NULL;
-    SecKey *publicKey = SecKeyCreateWithData((CFDataRef)keyData, (CFDictionaryRef)attributes, &error);
+    SecKeyRef publicKey = SecKeyCreateWithData((CFDataRef)keyData, (CFDictionaryRef)attributes, &error);
     
     if (error) {
         CFRelease(error);
