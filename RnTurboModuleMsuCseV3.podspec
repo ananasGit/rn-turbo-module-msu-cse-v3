@@ -15,11 +15,11 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm}"
   s.private_header_files = "ios/**/*.h"
-  
+
   # Required React Native dependencies
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
-  
+
   # Link Security framework for RSA encryption
   s.frameworks = "Security"
 
@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LIBRARY" => "libc++",
     "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
   }
-  
+
   # Disable modules for this specific target to avoid C++ header issues
   s.user_target_xcconfig = {
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES"
