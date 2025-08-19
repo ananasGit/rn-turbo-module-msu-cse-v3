@@ -57,8 +57,7 @@ final class CSEApiImpl implements CSEApi {
     }
 
 
-    @SuppressWarnings("unused")
-    private static String endpoint(boolean developmentMode) {
+    private String endpoint(boolean developmentMode) {
         if (developmentMode) {
             return "https://test.merchantsafeunipay.com/msu/cse/publickey";
         } else {
